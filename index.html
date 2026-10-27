@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Questões — Cumprimento de Sentença</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f1eb;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#222;line-height:1.55;padding:24px 16px 60px}
+.wrap{max-width:860px;margin:0 auto}
+.badge{display:inline-block;background:#1a2a4a;color:#fff;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-radius:8px;margin-bottom:14px}
+h1{font-size:26px;color:#1a2a4a;margin-bottom:4px}
+.sub{color:#6b6b6b;font-size:14px;margin-bottom:20px}
+.stats{background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:16px}
+.srow{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:12px}
+.st{display:flex;flex-direction:column}
+.st b{font-size:24px;color:#1a2a4a}
+.st.ok b{color:#2e7d32}.st.no b{color:#c62828}
+.st span{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.04em}
+.bar{height:8px;background:#e8e4da;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#1a2a4a;transition:width .3s}
+.ptxt{font-size:12px;color:#777;margin-top:6px}
+.nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.nav button{width:38px;height:38px;border:1px solid #ddd6c8;background:#ece8df;border-radius:8px;font-weight:700;color:#555;cursor:pointer;font-size:13px}
+.nav button.act{background:#1a2a4a;color:#fff;border-color:#1a2a4a}
+.nav button.ok{background:#dff0e0;border-color:#9cc9a0;color:#2e7d32}
+.nav button.no{background:#fbe1e1;border-color:#e6a3a3;color:#c62828}
+.nav button.act.ok,.nav button.act.no{outline:3px solid #1a2a4a;outline-offset:1px}
+.qc{display:none;background:#fff;border-radius:14px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.qc.vis{display:block}
+.qh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.qtag{background:#dfe9f7;color:#1a2a4a;font-weight:700;font-size:12px;padding:4px 10px;border-radius:6px}
+.qex{color:#777;font-size:12.5px}
+.qt{font-weight:700;color:#1a2a4a;font-size:15px;margin:8px 0 10px}
+.en{background:#f7f5f0;border-left:4px solid #1a2a4a;padding:12px 14px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:15px}
+.cm{font-weight:600;margin-bottom:12px;font-size:15px}
+.alt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1.5px solid #e2ddd2;border-radius:10px;padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:14.5px;color:#222;font-family:inherit;line-height:1.5}
+.alt:hover:not(:disabled){border-color:#1a2a4a}
+.alt .lt{flex:0 0 28px;height:28px;border-radius:50%;background:#ece8df;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1a2a4a}
+.alt:disabled{cursor:default}
+.alt.cor{background:#e5f4e6;border-color:#66bb6a}.alt.cor .lt{background:#2e7d32;color:#fff}
+.alt.err{background:#fde8e8;border-color:#ef9a9a}.alt.err .lt{background:#c62828;color:#fff}
+.fb{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:14px}
+.fb.ok{display:block;background:#e5f4e6;color:#1b5e20}
+.fb.no{display:block;background:#fde8e8;color:#8e1c1c}
+.acts{display:none;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.acts.on{display:flex}
+.b1,.b2,.b3{font-family:inherit;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;background:#fff}
+.b1{border:1.5px solid #1a2a4a;color:#1a2a4a}
+.b2{border:1.5px solid #d48a1a;color:#a8650a}
+.b3{border:1.5px solid #bbb;color:#555}
+.gab{margin-left:auto;font-size:13px;color:#555}
+.gab b{color:#1a2a4a;font-size:15px}
+.fu{display:none;margin-top:12px;background:#d8e2f0;border-radius:10px;padding:12px 14px;font-size:14px}
+.ca{display:none;margin-top:12px;background:#fff8e6;border-left:4px solid #e0a12b;border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px}
+.fu.on,.ca.on{display:block}
+.fu h4{color:#1a2a4a;margin-bottom:6px;font-size:14px}
+.ca h4{color:#a8650a;margin-bottom:6px;font-size:14px}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.pager button{font-family:inherit;background:#1a2a4a;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer;font-size:14px}
+.pager button:disabled{background:#b9b4aa;cursor:default}
+.pager span{color:#666;font-size:14px}
+.foot{text-align:center;color:#999;font-size:12px;margin-top:28px}
+@media(max-width:560px){h1{font-size:21px}.qc{padding:16px}.gab{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="badge">📌 Banco de Questões OAB · Processo Civil</div>
+<h1>Cumprimento de Sentença</h1>
+<p class="sub">CPC, arts. 509 a 538 · Prof. Caqui · Master5 OAB</p>
+<div class="stats">
+ <div class="srow">
+  <div class="st"><b id="sR">0</b><span>Respondidas</span></div>
+  <div class="st ok"><b id="sA">0</b><span>Acertos</span></div>
+  <div class="st no"><b id="sE">0</b><span>Erros</span></div>
+ </div>
+ <div class="bar"><i id="pb"></i></div>
+ <div class="ptxt" id="pt"></div>
+</div>
+<div class="nav" id="nv"></div>
+<div id="qs"></div>
+<div class="pager">
+ <button id="bp" onclick="go(cur-1)">← Anterior</button>
+ <span id="pi"></span>
+ <button id="bn" onclick="go(cur+1)">Próxima →</button>
+</div>
+<p class="foot">Material elaborado por Sabrine Arantes @sabrinedireito · Uso pessoal · Proibida a reprodução e o repasse · Lei 9.610/98</p>
+</div>
+<script>
+const QUESTOES = [
+ {
+  "num": 1,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Intimação do devedor",
+  "enunciado": "Marcos foi condenado, por sentença transitada em julgado, a pagar R$ 30.000,00 a Paula. Durante toda a fase de conhecimento, Marcos esteve representado por advogado constituído. Dois meses após o trânsito, Paula requereu o cumprimento de sentença.",
+  "comando": "Sobre a comunicação de Marcos para pagar, assinale a afirmativa correta.",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "Marcos será citado pessoalmente, por oficial de justiça, para pagar em 3 dias.",
+   "B": "Marcos será intimado por edital, para pagar em 30 dias.",
+   "C": "Marcos será intimado por carta com aviso de recebimento, obrigatoriamente, por se tratar de nova fase processual.",
+   "D": "Marcos será intimado pelo Diário da Justiça, na pessoa de seu advogado constituído, para pagar em 15 dias."
+  },
+  "feedbacks": {
+   "A": "Errado: no cumprimento de sentença não há citação (salvo art. 515, § 1º), e o prazo é de 15 dias.",
+   "B": "Errado: edital só para o revel citado por edital na fase de conhecimento (art. 513, § 2º, IV).",
+   "C": "Errado: carta com AR só se não houver procurador, se for assistido pela Defensoria ou se o pedido vier após 1 ano do trânsito.",
+   "D": "Correto: art. 513, § 2º, I, c/c art. 523."
+  },
+  "fundamento": "Art. 513, § 2º: o devedor será intimado para cumprir a sentença: I — pelo Diário da Justiça, na pessoa de seu advogado constituído nos autos; II — por carta com aviso de recebimento, quando representado pela Defensoria Pública ou quando não tiver procurador constituído; III — por meio eletrônico; IV — por edital, quando, citado na forma do art. 256, tiver sido revel. Art. 523: prazo de 15 dias para pagar.",
+  "caqui": "Fase de cumprimento é o \"segundo tempo\" do mesmo jogo: o devedor já está em campo, então basta avisar o advogado dele. Citação é para quem ainda não entrou no processo."
+ },
+ {
+  "num": 2,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Requerimento após 1 ano do trânsito",
+  "enunciado": "A sentença que condenou a Construtora Alfa Ltda. a pagar indenização a Renata transitou em julgado em março de 2024. Renata só requereu o cumprimento de sentença em agosto de 2025.",
+  "comando": "Nesse caso, a intimação da executada para pagar será feita:",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "por citação pessoal, por oficial de justiça, já que o processo foi arquivado.",
+   "B": "por edital, dada a demora do credor.",
+   "C": "na pessoa do devedor, por carta com aviso de recebimento encaminhada ao endereço constante dos autos.",
+   "D": "pelo Diário da Justiça, na pessoa do advogado, como em qualquer caso."
+  },
+  "feedbacks": {
+   "A": "Errado: não há citação; a lei prevê carta com AR.",
+   "B": "Errado: não há previsão de edital por demora do credor.",
+   "C": "Correto: art. 513, § 4º.",
+   "D": "Errado: passado mais de 1 ano do trânsito, a lei exige intimação na pessoa do devedor."
+  },
+  "fundamento": "Art. 513, § 4º: se o requerimento for formulado após 1 ano do trânsito em julgado da sentença, a intimação será feita na pessoa do devedor, por meio de carta com aviso de recebimento encaminhada ao endereço constante dos autos, observado o disposto no parágrafo único do art. 274 e no § 3º deste artigo.",
+  "caqui": "Depois de um ano, o advogado pode nem ter mais contato com o cliente. Por isso a lei manda avisar o próprio devedor, pelo correio."
+ },
+ {
+  "num": 3,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Fiador que não participou da fase de conhecimento",
+  "enunciado": "Lúcio ajuizou ação de cobrança de aluguéis apenas contra o locatário, Hélio, e obteve sentença de procedência. No cumprimento de sentença, Lúcio requereu a inclusão de Sérgio, fiador do contrato de locação, que não participou da fase de conhecimento.",
+  "comando": "O pedido de Lúcio deve ser:",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "deferido, porque o fiador é solidariamente responsável pela dívida.",
+   "B": "indeferido, porque a fiança se extingue com a sentença condenatória do afiançado.",
+   "C": "deferido, desde que Sérgio seja intimado para pagar em 15 dias.",
+   "D": "indeferido, porque o cumprimento de sentença não pode ser promovido em face do fiador que não participou da fase de conhecimento."
+  },
+  "feedbacks": {
+   "A": "Errado: a solidariedade material não supre a falta de participação no processo (art. 513, § 5º).",
+   "B": "Errado: a fiança não se extingue; o credor apenas precisa de outro título contra o fiador.",
+   "C": "Errado: a vedação do § 5º impede o cumprimento contra o fiador, independentemente de intimação.",
+   "D": "Correto: art. 513, § 5º."
+  },
+  "fundamento": "Art. 513, § 5º: o cumprimento da sentença não poderá ser promovido em face do fiador, do coobrigado ou do corresponsável que não tiver participado da fase de conhecimento.",
+  "caqui": "Quem não jogou o primeiro tempo não pode ser cobrado no segundo. Para cobrar o fiador, o credor precisaria tê-lo incluído na ação ou usar o contrato de locação como título extrajudicial (art. 784, VIII)."
+ },
+ {
+  "num": 4,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Títulos executivos judiciais",
+  "enunciado": "Quatro credores procuram um advogado com os seguintes documentos: (1) sentença arbitral condenatória; (2) contrato de mútuo assinado pelo devedor e por duas testemunhas; (3) cheque prescrito; (4) nota promissória.",
+  "comando": "Dos documentos apresentados, constitui título executivo judicial:",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "a sentença arbitral.",
+   "B": "o cheque prescrito.",
+   "C": "o contrato de mútuo assinado por duas testemunhas.",
+   "D": "a nota promissória."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 515, VII.",
+   "B": "Errado: cheque prescrito não é título executivo; cabe ação monitória (Súmula 299 do STJ).",
+   "C": "Errado: documento particular assinado por duas testemunhas é título extrajudicial (art. 784, III).",
+   "D": "Errado: nota promissória é título extrajudicial (art. 784, I)."
+  },
+  "fundamento": "Art. 515: são títulos executivos judiciais, entre outros: I — as decisões proferidas no processo civil que reconheçam a exigibilidade de obrigação; II e III — decisões homologatórias de autocomposição; VI — sentença penal condenatória transitada em julgado; VII — a sentença arbitral; VIII — sentença estrangeira homologada pelo STJ.",
+  "caqui": "A sentença arbitral nasce fora do Judiciário, mas a lei lhe dá a mesma força de uma sentença judicial. Já os papéis assinados pelas partes (contrato, cheque, promissória) são títulos extrajudiciais: dão execução, não cumprimento de sentença."
+ },
+ {
+  "num": 5,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Citação no cumprimento de sentença penal",
+  "enunciado": "Após o trânsito em julgado da sentença penal que condenou Vítor por lesão corporal, a vítima, Juliana, pretende executar no juízo cível a reparação dos danos, cujo valor mínimo foi fixado na sentença penal.",
+  "comando": "Sobre o procedimento, assinale a afirmativa correta.",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "Juliana deverá ajuizar nova ação de conhecimento, pois a sentença penal não é título executivo no cível.",
+   "B": "Vítor será intimado na pessoa do advogado que o defendeu no processo penal.",
+   "C": "Vítor será citado no juízo cível para o cumprimento da sentença ou para a liquidação, no prazo de 15 dias.",
+   "D": "O cumprimento será processado no próprio juízo criminal que proferiu a condenação."
+  },
+  "feedbacks": {
+   "A": "Errado: a sentença penal condenatória transitada é título executivo judicial (art. 515, VI).",
+   "B": "Errado: nos títulos dos incisos VI a IX, o devedor é citado, e não intimado.",
+   "C": "Correto: art. 515, § 1º.",
+   "D": "Errado: a competência é do juízo cível competente (art. 516, III)."
+  },
+  "fundamento": "Art. 515, VI: é título executivo judicial a sentença penal condenatória transitada em julgado. § 1º: nos casos dos incisos VI a IX, o devedor será citado no juízo cível para o cumprimento da sentença ou para a liquidação no prazo de 15 dias. Art. 516, III: competência do juízo cível competente.",
+  "caqui": "Na sentença penal, arbitral ou estrangeira, não houve processo civil anterior com o devedor. Por isso, aqui, ele é citado: é a primeira vez que entra em campo no cível."
+ },
+ {
+  "num": 6,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Competência e opção do exequente",
+  "enunciado": "Eduardo venceu ação indenizatória que tramitou em Belo Horizonte/MG contra Camila. No momento do cumprimento de sentença, Camila reside em Curitiba/PR, onde estão todos os seus bens.",
+  "comando": "Sobre a competência para o cumprimento, assinale a afirmativa correta.",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "É obrigatoriamente do juízo de Curitiba, por ser o domicílio atual da executada.",
+   "B": "É obrigatoriamente do juízo que decidiu a causa em primeiro grau, em Belo Horizonte.",
+   "C": "É do tribunal de justiça que julgou eventual apelação.",
+   "D": "Eduardo pode optar pelo juízo do atual domicílio de Camila ou do local onde se encontram seus bens, solicitando a remessa dos autos ao juízo de origem."
+  },
+  "feedbacks": {
+   "A": "Errado: Curitiba é uma opção do exequente, não uma imposição.",
+   "B": "Errado: o parágrafo único do art. 516 dá ao exequente a opção por outros foros.",
+   "C": "Errado: o tribunal só é competente nas causas de sua competência originária (art. 516, I).",
+   "D": "Correto: art. 516, II e parágrafo único."
+  },
+  "fundamento": "Art. 516: o cumprimento efetuar-se-á perante: II — o juízo que decidiu a causa no primeiro grau de jurisdição. Parágrafo único: nas hipóteses dos incisos II e III, o exequente poderá optar pelo juízo do atual domicílio do executado, pelo juízo do local onde se encontrem os bens sujeitos à execução ou pelo do local onde deva ser executada a obrigação de fazer ou de não fazer, casos em que a remessa dos autos do processo será solicitada ao juízo de origem.",
+  "caqui": "A lei deixa o exequente \"levar o processo até onde o dinheiro está\". Penhorar bens em outra cidade por carta precatória é lento; mudar o processo de endereço costuma ser mais eficiente."
+ },
+ {
+  "num": 7,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Protesto da decisão judicial",
+  "enunciado": "Transitada em julgado a sentença que condenou Igor a pagar R$ 15.000,00 a Bianca, e intimado Igor para pagamento, Bianca deseja levar a decisão a protesto em cartório.",
+  "comando": "Sobre o protesto, assinale a afirmativa correta.",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "O protesto pode ser feito a qualquer momento após a sentença, mesmo antes do trânsito em julgado.",
+   "B": "O protesto só pode ser feito depois de transcorrido o prazo para pagamento voluntário previsto no art. 523.",
+   "C": "Uma vez feito, o protesto só pode ser cancelado por ação própria de cancelamento.",
+   "D": "O protesto de decisão judicial é vedado, pois só se protestam títulos de crédito."
+  },
+  "feedbacks": {
+   "A": "Errado: o art. 517 exige trânsito em julgado e o decurso do prazo do art. 523.",
+   "B": "Correto: art. 517, caput.",
+   "C": "Errado: o juiz manda cancelar em 3 dias, comprovada a satisfação integral (art. 517, § 4º).",
+   "D": "Errado: a lei autoriza expressamente o protesto da decisão judicial."
+  },
+  "fundamento": "Art. 517: a decisão judicial transitada em julgado poderá ser levada a protesto, nos termos da lei, depois de transcorrido o prazo para pagamento voluntário previsto no art. 523. § 4º: a requerimento do executado, o protesto será cancelado por determinação do juiz, mediante ofício a ser expedido ao cartório, no prazo de 3 dias, contado da data de protocolo do requerimento, desde que comprovada a satisfação integral da obrigação.",
+  "caqui": "O protesto é um \"aviso público\" ao mercado de que o devedor não pagou. Por isso só vem depois de dar a ele a chance de pagar voluntariamente."
+ },
+ {
+  "num": 8,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Liquidação pelo procedimento comum",
+  "enunciado": "Rafael foi atropelado e obteve sentença condenando o motorista a ressarcir todas as despesas médicas decorrentes do acidente, sem fixação de valor. Após a sentença, Rafael precisou de duas novas cirurgias, cujas despesas ainda não constam dos autos.",
+  "comando": "A modalidade de liquidação adequada é:",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "por arbitramento, com nomeação obrigatória de perito.",
+   "B": "desnecessária, pois toda sentença condenatória já é líquida.",
+   "C": "pelo procedimento comum, pois há necessidade de alegar e provar fato novo.",
+   "D": "por simples cálculo aritmético, com apresentação de demonstrativo."
+  },
+  "feedbacks": {
+   "A": "Errado: arbitramento é para avaliação técnica sem fato novo.",
+   "B": "Errado: a sentença é ilíquida e precisa ser liquidada antes do cumprimento.",
+   "C": "Correto: art. 509, II, e art. 511.",
+   "D": "Errado: o valor não depende apenas de conta; há fatos a provar."
+  },
+  "fundamento": "Art. 509: quando a sentença condenar ao pagamento de quantia ilíquida, proceder-se-á à sua liquidação: I — por arbitramento, quando determinado pela sentença, convencionado pelas partes ou exigido pela natureza do objeto; II — pelo procedimento comum, quando houver necessidade de alegar e provar fato novo. Art. 511: na liquidação pelo procedimento comum, o juiz determinará a intimação do requerido, na pessoa de seu advogado, para, querendo, apresentar contestação no prazo de 15 dias.",
+  "caqui": "Pergunta-chave: \"preciso provar algo que aconteceu e ainda não está no processo?\" Se sim, é procedimento comum. Se só preciso de um especialista para avaliar, é arbitramento. Se basta uma calculadora, nem é liquidação."
+ },
+ {
+  "num": 9,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Limites da liquidação",
+  "enunciado": "Na liquidação por arbitramento de sentença que condenou a Indústria Beta S/A a indenizar danos materiais a um vizinho, a indústria pede que o juiz reexamine se ela de fato causou os danos, apresentando novos documentos.",
+  "comando": "O pedido da indústria deve ser:",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "acolhido, pois a liquidação permite ampla discussão sobre o dever de indenizar.",
+   "B": "rejeitado apenas se a sentença tiver sido confirmada pelo tribunal.",
+   "C": "rejeitado, pois na liquidação é vedado discutir de novo a lide ou modificar a sentença que a julgou.",
+   "D": "acolhido, desde que os documentos sejam novos."
+  },
+  "feedbacks": {
+   "A": "Errado: o dever de indenizar já foi decidido; a liquidação só apura o valor.",
+   "B": "Errado: a vedação vale independentemente de recurso.",
+   "C": "Correto: art. 509, § 4º.",
+   "D": "Errado: documentos novos podem fundamentar ação rescisória (art. 966, VII), não rediscussão na liquidação."
+  },
+  "fundamento": "Art. 509, § 4º: na liquidação é vedado discutir de novo a lide ou modificar a sentença que a julgou.",
+  "caqui": "A liquidação é a fase de \"medir o tamanho da conta\", não de discutir se a conta existe. Isso já foi decidido."
+ },
+ {
+  "num": 10,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Cumprimento provisório — multa e honorários",
+  "enunciado": "A Seguradora Gama S/A foi condenada a pagar R$ 100.000,00 a Teresa e interpôs recurso especial, sem efeito suspensivo. Teresa requereu o cumprimento provisório, e a seguradora foi intimada, mas não pagou no prazo de 15 dias.",
+  "comando": "Sobre a multa e os honorários do art. 523, § 1º, assinale a afirmativa correta.",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "Incidem apenas se o recurso especial for desprovido.",
+   "B": "Incide apenas a multa, mas não os honorários.",
+   "C": "Não incidem no cumprimento provisório, por não haver trânsito em julgado.",
+   "D": "Incidem no cumprimento provisório de sentença condenatória ao pagamento de quantia certa."
+  },
+  "feedbacks": {
+   "A": "Errado: incidem desde o fim do prazo de pagamento, ficando sem efeito se a decisão for reformada (art. 520, II).",
+   "B": "Errado: incidem ambos.",
+   "C": "Errado: o CPC/2015 superou essa ideia; a lei é expressa.",
+   "D": "Correto: art. 520, § 2º."
+  },
+  "fundamento": "Art. 520, § 2º: a multa e os honorários a que se refere o § 1º do art. 523 são devidos no cumprimento provisório de sentença condenatória ao pagamento de quantia certa. § 3º: se o executado comparecer tempestivamente e depositar o valor, com a finalidade de isentar-se da multa, o ato não será havido como incompatível com o recurso por ele interposto.",
+  "caqui": "No provisório, a \"janela do desconto\" também existe: quem não paga nem deposita em 15 dias paga os 20%. E depositar para fugir da multa não significa desistir do recurso."
+ },
+ {
+  "num": 11,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Dispensa de caução no cumprimento provisório",
+  "enunciado": "Manoela obteve sentença condenando seu ex-empregador a pagar indenização por danos materiais. Em cumprimento provisório, pretende levantar o dinheiro penhorado sem prestar caução. A sentença está pendente de apelação sem efeito suspensivo.",
+  "comando": "A caução poderá ser dispensada, entre outras hipóteses, quando:",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "o executado não apresentar impugnação no prazo.",
+   "B": "o valor da condenação for inferior a 60 salários-mínimos.",
+   "C": "a sentença estiver em consonância com súmula do STF ou do STJ ou com acórdão proferido em julgamento de casos repetitivos.",
+   "D": "o exequente for pessoa jurídica de direito privado."
+  },
+  "feedbacks": {
+   "A": "Errado: a ausência de impugnação não está entre as hipóteses de dispensa.",
+   "B": "Errado: não há limite de valor no art. 521.",
+   "C": "Correto: art. 521, IV.",
+   "D": "Errado: não há essa hipótese."
+  },
+  "fundamento": "Art. 521: a caução prevista no inciso IV do art. 520 poderá ser dispensada nos casos em que: I — o crédito for de natureza alimentar, independentemente de sua origem; II — o credor demonstrar situação de necessidade; III — pender o agravo do art. 1.042; IV — a sentença a ser provisoriamente cumprida estiver em consonância com súmula do STF ou do STJ ou em conformidade com acórdão proferido no julgamento de casos repetitivos. Parágrafo único: a caução será mantida quando da dispensa possa resultar manifesto risco de grave dano de difícil ou incerta reparação.",
+  "caqui": "Macete \"ANA-SÚ\": Alimentos, Necessidade, Agravo do 1.042 e SÚmula/repetitivo. Se a decisão já segue o entendimento dos tribunais superiores, o risco de reforma é pequeno, e a caução pode ser dispensada."
+ },
+ {
+  "num": 12,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Responsabilidade do exequente no provisório",
+  "enunciado": "Joaquim levantou, em cumprimento provisório e mediante caução, R$ 50.000,00 depositados pela executada. Depois, o tribunal deu provimento ao recurso e reformou integralmente a sentença.",
+  "comando": "Assinale a consequência correta.",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "Joaquim não precisa devolver o valor, pois o levantamento foi autorizado judicialmente.",
+   "B": "A execução fica sem efeito, e Joaquim deve restituir as partes ao estado anterior e reparar os danos sofridos pela executada, liquidados nos mesmos autos.",
+   "C": "Joaquim só responde se tiver agido de má-fé.",
+   "D": "A executada deve ajuizar ação autônoma de indenização, em procedimento comum."
+  },
+  "feedbacks": {
+   "A": "Errado: o cumprimento provisório corre por conta e risco do exequente.",
+   "B": "Correto: art. 520, I e II.",
+   "C": "Errado: a responsabilidade é objetiva; independe de culpa.",
+   "D": "Errado: os prejuízos são liquidados nos mesmos autos."
+  },
+  "fundamento": "Art. 520: I — o cumprimento provisório corre por iniciativa e responsabilidade do exequente, que se obriga, se a sentença for reformada, a reparar os danos que o executado haja sofrido; II — fica sem efeito, sobrevindo decisão que modifique ou anule a sentença objeto da execução, restituindo-se as partes ao estado anterior e liquidando-se eventuais prejuízos nos mesmos autos.",
+  "caqui": "Comer a sobremesa antes de o jantar acabar é permitido, mas, se a mesa virar, quem comeu paga a conta. Essa responsabilidade não depende de culpa."
+ },
+ {
+  "num": 13,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Multa e honorários de 10%",
+  "enunciado": "Intimado para pagar R$ 80.000,00 em cumprimento definitivo de sentença, Otávio deixou transcorrer o prazo sem pagamento.",
+  "comando": "O valor atualizado do débito passará a ser acrescido de:",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "multa de 10% e honorários advocatícios de 10%.",
+   "B": "multa de 10% e honorários advocatícios entre 10% e 20%, a critério do juiz.",
+   "C": "multa de 20%, sem honorários, que só são devidos se houver impugnação.",
+   "D": "honorários de 10%, sem multa, que só incide no cumprimento provisório."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 523, § 1º.",
+   "B": "Errado: o percentual dos honorários do § 1º é fixo, não podendo ser relativizado.",
+   "C": "Errado: são 10% + 10%, e os honorários independem de impugnação (Súmula 517 do STJ).",
+   "D": "Errado: a multa incide no definitivo e também no provisório (art. 520, § 2º)."
+  },
+  "fundamento": "Art. 523, § 1º: não ocorrendo pagamento voluntário no prazo do caput, o débito será acrescido de multa de 10% e, também, de honorários de advogado de 10%. Súmula 517 do STJ: são devidos honorários advocatícios no cumprimento de sentença, haja ou não impugnação, depois de escoado o prazo para pagamento voluntário, que se inicia após a intimação do advogado da parte executada.",
+  "caqui": "Perdeu a \"janela do desconto\" de 15 dias? A conta cresce 20%: 10% de multa e 10% de honorários. Número fixo, sem negociação."
+ },
+ {
+  "num": 14,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Pagamento parcial",
+  "enunciado": "Intimada para pagar R$ 40.000,00, a Comercial Delta Ltda. depositou, dentro do prazo de 15 dias, R$ 25.000,00, informando não ter condições de pagar o restante.",
+  "comando": "Assinale o valor ainda devido, considerando apenas a multa e os honorários do art. 523, § 1º.",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "R$ 23.000,00, pois a multa e os honorários incidem sobre o total da dívida.",
+   "B": "R$ 15.000,00, pois o pagamento parcial afasta a multa e os honorários.",
+   "C": "R$ 16.500,00, pois só a multa incide sobre o restante.",
+   "D": "R$ 18.000,00, pois a multa e os honorários incidem sobre o restante."
+  },
+  "feedbacks": {
+   "A": "Errado: os acréscimos não incidem sobre a parcela paga no prazo.",
+   "B": "Errado: o pagamento parcial não afasta os acréscimos sobre o saldo.",
+   "C": "Errado: incidem multa e honorários.",
+   "D": "Correto: R$ 15.000 + 10% (R$ 1.500) + 10% (R$ 1.500) = R$ 18.000 (art. 523, § 2º)."
+  },
+  "fundamento": "Art. 523, § 2º: efetuado o pagamento parcial no prazo previsto no caput, a multa e os honorários previstos no § 1º incidirão sobre o restante.",
+  "caqui": "O que foi pago no prazo \"ganha o desconto\". Os 20% só recaem sobre o que ficou para trás."
+ },
+ {
+  "num": 15,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Prazo do art. 523",
+  "enunciado": "O advogado da executada foi intimado pelo Diário da Justiça para que sua cliente pagasse o débito. No curso do prazo houve um feriado nacional e dois fins de semana.",
+  "comando": "Sobre a contagem do prazo de 15 dias para pagamento voluntário, segundo o entendimento do STJ:",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "conta-se em dias úteis, por se tratar de prazo processual.",
+   "B": "conta-se em dias úteis apenas se houver litisconsórcio passivo.",
+   "C": "conta-se a partir da intimação pessoal do executado, e não do advogado.",
+   "D": "conta-se em dias corridos, por se tratar de prazo de direito material."
+  },
+  "feedbacks": {
+   "A": "Correto: o STJ firmou que o prazo do art. 523 é processual e se conta em dias úteis (art. 219).",
+   "B": "Errado: a contagem em dias úteis vale sempre; o litisconsórcio pode gerar a dobra do art. 229 em autos físicos.",
+   "C": "Errado: em regra, a intimação é na pessoa do advogado (art. 513, § 2º, I).",
+   "D": "Errado: o STJ afastou a tese de prazo material."
+  },
+  "fundamento": "Art. 219: na contagem de prazo em dias, estabelecido por lei ou pelo juiz, computar-se-ão somente os dias úteis. Parágrafo único: aplica-se somente aos prazos processuais. O STJ firmou que o prazo do art. 523 tem natureza processual.",
+  "caqui": "O prazo do art. 523 é contado como os demais prazos do processo: fim de semana e feriado não entram na conta."
+ },
+ {
+  "num": 16,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Prazo da impugnação",
+  "enunciado": "Gustavo foi intimado, na pessoa de seu advogado, para pagar o débito em cumprimento de sentença. O prazo de 15 dias terminou sem pagamento, e ainda não houve penhora.",
+  "comando": "Sobre a impugnação, assinale a afirmativa correta.",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "Gustavo tem 15 dias para impugnar, contados do término do prazo para pagamento, independentemente de penhora ou nova intimação.",
+   "B": "Gustavo só poderá impugnar se depositar previamente o valor integral da dívida.",
+   "C": "Gustavo deverá opor embargos à execução, em autos apartados, no prazo de 15 dias.",
+   "D": "Gustavo deverá aguardar a penhora para, então, impugnar no prazo de 15 dias contados da intimação da penhora."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 525, caput.",
+   "B": "Errado: a garantia do juízo só é exigida para pedir efeito suspensivo (art. 525, § 6º).",
+   "C": "Errado: embargos à execução são a defesa no processo de execução de título extrajudicial (art. 914).",
+   "D": "Errado: a impugnação independe de penhora."
+  },
+  "fundamento": "Art. 525: transcorrido o prazo previsto no art. 523 sem o pagamento voluntário, inicia-se o prazo de 15 dias para que o executado, independentemente de penhora ou nova intimação, apresente, nos próprios autos, sua impugnação.",
+  "caqui": "Duas portas seguidas: a primeira (15 dias) é para pagar; quando ela fecha, a segunda (mais 15 dias) se abre sozinha, para impugnar. Sem penhora e sem novo aviso."
+ },
+ {
+  "num": 17,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Matérias da impugnação",
+  "enunciado": "Em impugnação ao cumprimento de sentença, o executado alegou que já havia pago a dívida antes mesmo de a sentença ser proferida, fato que não foi alegado na contestação.",
+  "comando": "Sobre essa alegação, assinale a afirmativa correta.",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "Não pode ser apreciada, pois a impugnação só admite causas modificativas ou extintivas supervenientes à sentença.",
+   "B": "Deve ser apreciada, pois o pagamento é causa extintiva da obrigação e pode ser alegado a qualquer tempo.",
+   "C": "Não pode ser apreciada, pois a impugnação não admite alegação de pagamento em nenhuma hipótese.",
+   "D": "Deve ser apreciada, desde que o executado apresente o comprovante original."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 525, § 1º, VII.",
+   "B": "Errado: o pagamento anterior à sentença deveria ter sido alegado na contestação; está coberto pela coisa julgada.",
+   "C": "Errado: o pagamento posterior à sentença pode ser alegado.",
+   "D": "Errado: a questão não é de prova, mas de preclusão e coisa julgada."
+  },
+  "fundamento": "Art. 525, § 1º, VII: na impugnação, o executado poderá alegar qualquer causa modificativa ou extintiva da obrigação, como pagamento, novação, compensação, transação ou prescrição, desde que supervenientes à sentença. Art. 508: transitada em julgado a decisão de mérito, considerar-se-ão deduzidas e repelidas todas as alegações e defesas que a parte poderia opor.",
+  "caqui": "O que aconteceu antes da sentença era assunto do primeiro tempo. Na impugnação só entra o que aconteceu depois do apito final."
+ },
+ {
+  "num": 18,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Vício transrescisório",
+  "enunciado": "Cristina foi citada por edital em ação de cobrança, sem que o autor tivesse esgotado as tentativas de localizá-la no endereço que ele conhecia. O processo correu à revelia e a sentença transitou em julgado há 3 anos. Intimada no cumprimento de sentença, ela quer se defender.",
+  "comando": "Cristina poderá alegar, na impugnação:",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "a injustiça da sentença, por não ter tido oportunidade de produzir provas.",
+   "B": "nada, pois passou o prazo de 2 anos da ação rescisória.",
+   "C": "apenas excesso de execução.",
+   "D": "a nulidade da citação, pois o processo correu à revelia na fase de conhecimento."
+  },
+  "feedbacks": {
+   "A": "Errado: a impugnação não permite rediscutir o mérito; o vício é de citação.",
+   "B": "Errado: a falta ou nulidade de citação com revelia não se sujeita ao prazo da rescisória.",
+   "C": "Errado: a nulidade da citação também pode ser alegada.",
+   "D": "Correto: art. 525, § 1º, I."
+  },
+  "fundamento": "Art. 525, § 1º, I: na impugnação, o executado poderá alegar falta ou nulidade da citação se, na fase de conhecimento, o processo correu à revelia. O vício é chamado de transrescisório porque pode ser alegado mesmo após o prazo da ação rescisória, inclusive por querela nullitatis.",
+  "caqui": "Sem citação válida, é como se o réu nunca tivesse sido chamado para o jogo. Esse vício é tão grave que \"sobrevive\" até ao prazo da ação rescisória."
+ },
+ {
+  "num": 19,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Excesso de execução",
+  "enunciado": "Na impugnação, a executada alegou apenas que o exequente cobra valor superior ao devido, mas não indicou o valor que entende correto nem apresentou demonstrativo de cálculo.",
+  "comando": "O juiz deverá:",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "suspender a execução até a perícia contábil.",
+   "B": "intimar o exequente para reduzir o valor cobrado.",
+   "C": "determinar a remessa dos autos à contadoria judicial para apurar o valor correto.",
+   "D": "rejeitar liminarmente a impugnação."
+  },
+  "feedbacks": {
+   "A": "Errado: a impugnação, em regra, nem tem efeito suspensivo.",
+   "B": "Errado: a lei impõe consequência ao executado, não ao exequente.",
+   "C": "Errado: o ônus de apontar o valor correto é do executado.",
+   "D": "Correto: art. 525, §§ 4º e 5º."
+  },
+  "fundamento": "Art. 525, § 4º: quando o executado alegar que o exequente, em excesso de execução, pleiteia quantia superior à resultante da sentença, cumprir-lhe-á declarar de imediato o valor que entende correto, apresentando demonstrativo discriminado e atualizado de seu cálculo. § 5º: na ausência do demonstrativo, a impugnação será liminarmente rejeitada, se o excesso de execução for o seu único fundamento, ou, se houver outro, a impugnação será processada, mas o juiz não examinará a alegação de excesso.",
+  "caqui": "Quem diz que \"está caro\" precisa dizer quanto acha justo, e mostrar a conta. Sem isso, a reclamação não é ouvida."
+ },
+ {
+  "num": 20,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Efeito suspensivo da impugnação",
+  "enunciado": "A executada apresentou impugnação tempestiva, com fundamentos relevantes, e pediu efeito suspensivo, alegando que a penhora do seu faturamento comprometeria o pagamento dos salários de seus empregados. O juízo ainda não está garantido.",
+  "comando": "Nesse caso, o juiz:",
+  "gabarito": "D",
+  "alternativas": {
+   "A": "deve conceder o efeito suspensivo, pois toda impugnação o possui automaticamente.",
+   "B": "deve extinguir a impugnação, pois ela exige garantia do juízo para ser conhecida.",
+   "C": "pode conceder o efeito suspensivo de ofício, independentemente de garantia, diante do risco social.",
+   "D": "não pode conceder o efeito suspensivo, pois um de seus requisitos é a garantia do juízo por penhora, caução ou depósito suficientes."
+  },
+  "feedbacks": {
+   "A": "Errado: a regra é a ausência de efeito suspensivo (art. 525, § 6º).",
+   "B": "Errado: a garantia não é requisito para impugnar, apenas para suspender.",
+   "C": "Errado: a lei exige requerimento e garantia.",
+   "D": "Correto: o efeito suspensivo exige requerimento, garantia do juízo, relevância e risco de grave dano."
+  },
+  "fundamento": "Art. 525, § 6º: a apresentação de impugnação não impede a prática dos atos executivos, inclusive os de expropriação, podendo o juiz, a requerimento do executado e desde que garantido o juízo com penhora, caução ou depósito suficientes, atribuir-lhe efeito suspensivo, se seus fundamentos forem relevantes e se o prosseguimento da execução for manifestamente suscetível de causar ao executado grave dano de difícil ou incerta reparação.",
+  "caqui": "Para frear a execução, o executado precisa de quatro chaves: pedir, garantir o juízo, ter bons argumentos e mostrar o risco. Faltou uma, o freio não funciona."
+ },
+ {
+  "num": 21,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Coisa julgada inconstitucional",
+  "enunciado": "Sentença transitada em julgado em 2022 condenou um particular a pagar valor com base em lei municipal. Em 2024, o STF declarou essa lei inconstitucional, em controle concentrado. Em 2025, iniciou-se o cumprimento de sentença.",
+  "comando": "Sobre a defesa do executado, assinale a afirmativa correta.",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "Deve ajuizar ação rescisória, cujo prazo é contado do trânsito em julgado da decisão do STF.",
+   "B": "Pode alegar a inconstitucionalidade por simples petição, a qualquer tempo.",
+   "C": "Pode alegar na impugnação a inexigibilidade da obrigação, com base na decisão do STF.",
+   "D": "Nada pode fazer, pois a coisa julgada é intangível."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 525, § 15.",
+   "B": "Errado: não há essa previsão.",
+   "C": "Errado: a impugnação só serve se a decisão do STF for anterior ao trânsito em julgado da exequenda (art. 525, § 14).",
+   "D": "Errado: a lei prevê a rescisória com prazo especial."
+  },
+  "fundamento": "Art. 525, § 12: considera-se também inexigível a obrigação reconhecida em título executivo judicial fundado em lei ou ato normativo considerado inconstitucional pelo STF, em controle concentrado ou difuso. § 14: a decisão do STF deve ser anterior ao trânsito em julgado da decisão exequenda. § 15: se a decisão do STF for proferida após o trânsito em julgado da decisão exequenda, caberá ação rescisória, cujo prazo será contado do trânsito em julgado da decisão proferida pelo STF.",
+  "caqui": "Tudo depende da ordem dos fatos: decisão do STF antes do trânsito? Impugnação. Depois do trânsito? Ação rescisória, com prazo contado da decisão do STF."
+ },
+ {
+  "num": 22,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Recurso contra a decisão da impugnação",
+  "enunciado": "O juiz rejeitou a impugnação apresentada pela executada e determinou o prosseguimento do cumprimento de sentença, com a avaliação dos bens penhorados.",
+  "comando": "O recurso cabível contra essa decisão é:",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "apelação.",
+   "B": "agravo de instrumento.",
+   "C": "embargos de declaração, exclusivamente.",
+   "D": "recurso inominado."
+  },
+  "feedbacks": {
+   "A": "Errado: apelação cabe se a decisão extinguir o cumprimento de sentença.",
+   "B": "Correto: art. 1.015, parágrafo único.",
+   "C": "Errado: embargos de declaração cabem contra qualquer decisão com omissão, contradição ou obscuridade, mas não são o recurso próprio para reformar.",
+   "D": "Errado: recurso inominado é dos Juizados Especiais."
+  },
+  "fundamento": "Art. 1.015, parágrafo único: também caberá agravo de instrumento contra decisões interlocutórias proferidas na fase de liquidação de sentença ou de cumprimento de sentença, no processo de execução e no processo de inventário.",
+  "caqui": "Decisão que deixa o processo seguir é interlocutória: agravo de instrumento. Decisão que encerra o cumprimento é sentença: apelação."
+ },
+ {
+  "num": 23,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Execução invertida",
+  "enunciado": "Antes de ser intimada para o cumprimento de sentença, a Transportadora Ômega Ltda. compareceu em juízo e depositou R$ 20.000,00, com memória de cálculo, valor que entende devido. O autor impugnou, sustentando que o débito era de R$ 25.000,00, e o juiz lhe deu razão.",
+  "comando": "Assinale a consequência correta.",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "O depósito é ineficaz, e a multa e os honorários de 10% incidirão sobre R$ 25.000,00.",
+   "B": "Sobre a diferença de R$ 5.000,00 incidirão multa de 10% e honorários de 10%, seguindo-se a execução.",
+   "C": "O juiz deve extinguir o processo, pois houve pagamento espontâneo.",
+   "D": "Não incide multa, pois a transportadora agiu espontaneamente."
+  },
+  "feedbacks": {
+   "A": "Errado: o depósito é válido e pode ser levantado como parcela incontroversa.",
+   "B": "Correto: art. 526, § 2º.",
+   "C": "Errado: a extinção só ocorre se o autor não se opuser (art. 526, § 3º).",
+   "D": "Errado: sobre a insuficiência incidem os acréscimos."
+  },
+  "fundamento": "Art. 526: é lícito ao réu, antes de ser intimado para o cumprimento da sentença, comparecer em juízo e oferecer em pagamento o valor que entender devido, apresentando memória discriminada do cálculo. § 1º: o autor será ouvido no prazo de 5 dias, podendo impugnar o valor depositado, sem prejuízo do levantamento do depósito a título de parcela incontroversa. § 2º: concluindo o juiz pela insuficiência do depósito, sobre a diferença incidirão multa de 10% e honorários advocatícios, também fixados em 10%, seguindo-se a execução com penhora e atos subsequentes.",
+  "caqui": "Quem se antecipa e paga ganha o \"desconto\" no que pagou. Os 20% só recaem sobre o que faltou."
+ },
+ {
+  "num": 24,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Alimentos — rito da prisão",
+  "enunciado": "Pedro deixou de pagar a pensão alimentícia fixada em sentença em favor do filho. A mãe, representando o menor, requereu o cumprimento de sentença pelo rito que admite a prisão civil.",
+  "comando": "Sobre esse procedimento, assinale a afirmativa correta.",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "Pedro será intimado na pessoa de seu advogado para pagar em 15 dias, sob pena de multa de 10%.",
+   "B": "Pedro será intimado pessoalmente para, em 3 dias, pagar, provar que pagou ou justificar a impossibilidade de fazê-lo.",
+   "C": "Pedro será citado para pagar em 24 horas, sob pena de prisão imediata.",
+   "D": "Pedro será intimado pessoalmente para pagar em 5 dias, sob pena de prisão de até 6 meses."
+  },
+  "feedbacks": {
+   "A": "Errado: esse é o rito comum da penhora (art. 523).",
+   "B": "Correto: art. 528, caput.",
+   "C": "Errado: o prazo é de 3 dias, e a intimação é pessoal.",
+   "D": "Errado: o prazo é de 3 dias, e a prisão é de 1 a 3 meses (§ 3º)."
+  },
+  "fundamento": "Art. 528: no cumprimento de sentença que condene ao pagamento de prestação alimentícia ou de decisão interlocutória que fixe alimentos, o juiz, a requerimento do exequente, mandará intimar o executado pessoalmente para, em 3 dias, pagar o débito, provar que o fez ou justificar a impossibilidade de efetuá-lo. § 3º: se o executado não pagar ou se a justificativa apresentada não for aceita, o juiz, além de mandar protestar o pronunciamento judicial, decretar-lhe-á a prisão pelo prazo de 1 a 3 meses.",
+  "caqui": "Na pensão, a pressa é da fome: aviso pessoal, prazo curto de 3 dias e três saídas possíveis — pagar, provar que pagou ou justificar."
+ },
+ {
+  "num": 25,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Débito que autoriza a prisão",
+  "enunciado": "Rogério está há 12 meses sem pagar pensão à filha. A execução pelo rito da prisão foi ajuizada em junho.",
+  "comando": "O débito alimentar que autoriza a prisão civil de Rogério compreende:",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "as 6 prestações anteriores ao ajuizamento, por analogia ao prazo prescricional.",
+   "B": "apenas as prestações que se vencerem após o ajuizamento da execução.",
+   "C": "até as 3 prestações anteriores ao ajuizamento da execução e as que se vencerem no curso do processo.",
+   "D": "as 12 prestações vencidas, pois todas são de natureza alimentar."
+  },
+  "feedbacks": {
+   "A": "Errado: não há essa previsão.",
+   "B": "Errado: as 3 anteriores ao ajuizamento também entram.",
+   "C": "Correto: art. 528, § 7º, e Súmula 309 do STJ.",
+   "D": "Errado: as prestações mais antigas devem ser cobradas pelo rito da penhora."
+  },
+  "fundamento": "Art. 528, § 7º: o débito alimentar que autoriza a prisão civil do alimentante é o que compreende até as 3 prestações anteriores ao ajuizamento da execução e as que se vencerem no curso do processo. Súmula 309 do STJ, no mesmo sentido.",
+  "caqui": "A prisão serve para garantir a comida de agora, não para cobrar dívida velha. Por isso, só alcança as 3 últimas prestações antes do pedido, mais as que vencerem depois."
+ },
+ {
+  "num": 26,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Regime da prisão civil",
+  "enunciado": "Decretada a prisão civil de Fábio por não pagamento de pensão alimentícia, sua defesa questiona o local e o regime de cumprimento.",
+  "comando": "Assinale a afirmativa correta.",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "A prisão será cumprida em regime fechado, devendo o preso ficar separado dos presos comuns.",
+   "B": "O cumprimento da prisão extingue a dívida alimentar.",
+   "C": "A prisão será domiciliar, com monitoramento eletrônico, por se tratar de dívida civil.",
+   "D": "A prisão será cumprida em regime semiaberto, permitindo que Fábio trabalhe para pagar a dívida."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 528, § 4º.",
+   "B": "Errado: o cumprimento da pena não exime do pagamento (§ 5º).",
+   "C": "Errado: não há previsão de prisão domiciliar como regra.",
+   "D": "Errado: a lei determina o regime fechado."
+  },
+  "fundamento": "Art. 528, § 4º: a prisão será cumprida em regime fechado, devendo o preso ficar separado dos presos comuns. § 5º: o cumprimento da pena não exime o executado do pagamento das prestações vencidas e vincendas. § 6º: paga a prestação alimentícia, o juiz suspenderá o cumprimento da ordem de prisão.",
+  "caqui": "A prisão civil é pressão, não castigo: fica separado dos presos comuns, e a chave da cela é o pagamento. Sair da prisão não apaga a dívida."
+ },
+ {
+  "num": 27,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Opção pelo rito da penhora",
+  "enunciado": "Juliana, credora de alimentos, optou por promover o cumprimento de sentença pelo rito da penhora (art. 523), e não pelo rito da prisão. Meses depois, diante da ausência de bens, pediu a prisão do devedor no mesmo procedimento.",
+  "comando": "O pedido deve ser:",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "deferido, desde que limitado às 3 últimas prestações.",
+   "B": "indeferido, pois, optando o exequente pelo rito da penhora, não é admissível a prisão do executado nesse procedimento.",
+   "C": "deferido, pois a prisão civil é sempre cabível no inadimplemento de alimentos.",
+   "D": "indeferido, pois a prisão civil só é cabível para alimentos provisórios."
+  },
+  "feedbacks": {
+   "A": "Errado: a vedação é do procedimento escolhido, não do número de prestações.",
+   "B": "Correto: art. 528, § 8º.",
+   "C": "Errado: a lei afasta a prisão quando o credor escolhe o rito da penhora.",
+   "D": "Errado: a prisão cabe para alimentos definitivos ou provisórios (art. 531)."
+  },
+  "fundamento": "Art. 528, § 8º: o exequente pode optar por promover o cumprimento da sentença ou decisão desde logo, nos termos do disposto neste Livro, Título II, Capítulo III, caso em que não será admissível a prisão do executado, e, recaindo a penhora em dinheiro, a concessão de efeito suspensivo à impugnação não obsta a que o exequente levante mensalmente a importância da prestação.",
+  "caqui": "São dois trilhos diferentes: o da prisão (rápido, para as 3 últimas) e o da penhora (para o restante). Quem escolhe o trilho da penhora não pode pular para o da prisão no meio da viagem."
+ },
+ {
+  "num": 28,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Desconto em folha",
+  "enunciado": "Henrique, empregado celetista com salário líquido de R$ 6.000,00, paga pensão de R$ 1.500,00 por mês e deve R$ 12.000,00 de prestações atrasadas. A credora requer o desconto em folha também do débito pretérito, de forma parcelada.",
+  "comando": "Assinale a afirmativa correta.",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "O desconto pode atingir até 70% dos ganhos líquidos, por se tratar de verba alimentar.",
+   "B": "O débito pode ser descontado parceladamente, contanto que, somado à parcela devida, não ultrapasse 50% dos ganhos líquidos.",
+   "C": "O desconto em folha só pode abranger as prestações vincendas.",
+   "D": "O desconto em folha só é possível para servidores públicos."
+  },
+  "feedbacks": {
+   "A": "Errado: o limite legal é de 50%.",
+   "B": "Correto: art. 529, § 3º — no exemplo, até R$ 3.000,00 por mês no total (R$ 1.500 da pensão + até R$ 1.500 do atrasado).",
+   "C": "Errado: o § 3º permite também o desconto do débito em execução.",
+   "D": "Errado: alcança também militares, diretores, gerentes e empregados celetistas (art. 529, caput)."
+  },
+  "fundamento": "Art. 529: quando o executado for funcionário público, militar, diretor ou gerente de empresa ou empregado sujeito à legislação do trabalho, o exequente poderá requerer o desconto em folha de pagamento da importância da prestação alimentícia. § 3º: sem prejuízo do pagamento dos alimentos vincendos, o débito objeto de execução pode ser descontado dos rendimentos ou rendas do executado, de forma parcelada, nos termos do caput deste artigo, contanto que, somado à parcela devida, não ultrapasse 50% de seus ganhos líquidos.",
+  "caqui": "Metade do salário fica com o devedor, para que ele também sobreviva. A outra metade pode ir para a pensão do mês e para o atrasado."
+ },
+ {
+  "num": 29,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Alimentos indenizatórios",
+  "enunciado": "Condenado a pagar pensão mensal à viúva de um pedestre que atropelou culposamente, Ricardo deixou de pagar três prestações. A viúva requer a prisão civil de Ricardo e a constituição de capital.",
+  "comando": "Assinale a afirmativa correta.",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "Não cabe prisão nem constituição de capital, que só se aplicam a alimentos de família.",
+   "B": "Cabe a prisão civil, mas não a constituição de capital, que depende da situação financeira do devedor.",
+   "C": "Não cabe a prisão civil, por se tratar de alimentos indenizatórios, mas é cabível a constituição de capital para garantir a pensão.",
+   "D": "Cabe a prisão civil, pois se trata de prestação de alimentos."
+  },
+  "feedbacks": {
+   "A": "Errado: a constituição de capital é justamente para a indenização por ato ilícito (art. 533).",
+   "B": "Errado: a Súmula 313 dispensa a análise da situação financeira do demandado.",
+   "C": "Correto: art. 533 e Súmula 313 do STJ; o STJ não admite prisão por alimentos indenizatórios.",
+   "D": "Errado: o STJ restringe a prisão civil aos alimentos do direito de família."
+  },
+  "fundamento": "Art. 533: quando a indenização por ato ilícito incluir prestação de alimentos, caberá ao executado, a requerimento do exequente, constituir capital cuja renda assegure o pagamento do valor mensal da pensão. Súmula 313 do STJ: em ação de indenização, procedente o pedido, é necessária a constituição de capital ou caução fidejussória para a garantia de pagamento da pensão, independentemente da situação financeira do demandado.",
+  "caqui": "Nem todo \"alimento\" leva à prisão: a pensão por ato ilícito é indenização. Ela ganha outra proteção — um capital reservado que gera renda para pagar as parcelas."
+ },
+ {
+  "num": 30,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Fazenda Pública — impugnação",
+  "enunciado": "Lívia obteve sentença condenando o Estado a pagar-lhe R$ 300.000,00. Ela apresentou o demonstrativo do crédito e requereu o cumprimento de sentença.",
+  "comando": "Sobre o procedimento, assinale a afirmativa correta.",
+  "gabarito": "C",
+  "alternativas": {
+   "A": "O Estado será intimado para pagar em 2 meses, mediante requisição de pequeno valor.",
+   "B": "O Estado será citado para opor embargos à execução em 30 dias.",
+   "C": "O Estado será intimado para, querendo, impugnar a execução em 30 dias, nos próprios autos, não se aplicando a multa do art. 523, § 1º.",
+   "D": "O Estado será intimado para pagar em 15 dias, sob pena de multa de 10% e penhora de bens."
+  },
+  "feedbacks": {
+   "A": "Errado: valor dessa monta segue o regime de precatório; RPV é para pequeno valor.",
+   "B": "Errado: no cumprimento de sentença, a defesa é a impugnação, por intimação.",
+   "C": "Correto: arts. 534, § 2º, e 535.",
+   "D": "Errado: não há multa nem penhora contra a Fazenda (art. 534, § 2º; bens públicos são impenhoráveis)."
+  },
+  "fundamento": "Art. 534, § 2º: a multa prevista no § 1º do art. 523 não se aplica à Fazenda Pública. Art. 535: a Fazenda Pública será intimada na pessoa de seu representante judicial, por carga, remessa ou meio eletrônico, para, querendo, no prazo de 30 dias e nos próprios autos, impugnar a execução. § 3º: não impugnada a execução ou rejeitadas as arguições, expedir-se-á precatório ou, no caso de pequeno valor, requisição a ser paga em 2 meses.",
+  "caqui": "A Fazenda não \"abre o cofre\" quando quer: paga na fila do precatório ou da RPV. Por isso não há multa por atraso de 15 dias, e ela tem 30 dias para impugnar."
+ },
+ {
+  "num": 31,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Honorários contra a Fazenda",
+  "enunciado": "Em cumprimento de sentença contra a União, que resultará na expedição de precatório, a União não apresentou impugnação. O exequente requer a fixação de honorários advocatícios pela fase de cumprimento.",
+  "comando": "O pedido deve ser:",
+  "gabarito": "B",
+  "alternativas": {
+   "A": "deferido, no percentual fixo de 10%.",
+   "B": "indeferido, pois não são devidos honorários no cumprimento de sentença contra a Fazenda que enseje precatório, desde que não impugnada.",
+   "C": "deferido, entre 10% e 20% do valor executado.",
+   "D": "indeferido, pois nunca são devidos honorários contra a Fazenda Pública."
+  },
+  "feedbacks": {
+   "A": "Errado: não se aplica o art. 523, § 1º, à Fazenda.",
+   "B": "Correto: art. 85, § 7º.",
+   "C": "Errado: a lei afasta os honorários nessa hipótese.",
+   "D": "Errado: se houver impugnação, ou no caso de RPV, os honorários podem ser devidos."
+  },
+  "fundamento": "Art. 85, § 7º: não serão devidos honorários no cumprimento de sentença contra a Fazenda Pública que enseje expedição de precatório, desde que não tenha sido impugnada.",
+  "caqui": "Se a Fazenda não resiste e o pagamento vai para a fila do precatório, não houve \"trabalho extra\" do advogado a remunerar."
+ },
+ {
+  "num": 32,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Astreintes — destinatário e levantamento",
+  "enunciado": "Uma operadora de plano de saúde foi condenada, em tutela provisória, a autorizar cirurgia em 48 horas, sob multa diária. Descumprida a ordem, a multa alcançou R$ 30.000,00. O processo ainda não transitou em julgado.",
+  "comando": "Sobre a multa, assinale a afirmativa correta.",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "O valor da multa é devido ao exequente; a decisão é passível de cumprimento provisório, com depósito em juízo, permitido o levantamento após o trânsito em julgado da sentença favorável à parte.",
+   "B": "O valor da multa é devido ao Estado e pode ser levantado imediatamente.",
+   "C": "A multa só pode ser cobrada após o trânsito em julgado, sendo vedado o cumprimento provisório.",
+   "D": "O valor da multa reverte ao Fundo de Defesa de Direitos Difusos."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 537, §§ 2º e 3º.",
+   "B": "Errado: a multa é devida ao exequente.",
+   "C": "Errado: a lei admite o cumprimento provisório da multa.",
+   "D": "Errado: não há essa destinação."
+  },
+  "fundamento": "Art. 537, § 2º: o valor da multa será devido ao exequente. § 3º: a decisão que fixa a multa é passível de cumprimento provisório, devendo ser depositada em juízo, permitido o levantamento do valor após o trânsito em julgado da sentença favorável à parte. Súmula 410 do STJ: a prévia intimação pessoal do devedor é condição necessária para a cobrança da multa.",
+  "caqui": "A multa diária é o \"despertador\" do devedor. O dinheiro vai para quem foi prejudicado pelo atraso, mas fica guardado até o processo terminar."
+ },
+ {
+  "num": 33,
+  "exame": "Inédita — estilo FGV",
+  "titulo": "Benfeitorias e direito de retenção",
+  "enunciado": "Na ação reivindicatória movida por Alberto, Carlos foi condenado a entregar um imóvel. Somente no cumprimento de sentença, Carlos alegou ter feito benfeitorias necessárias no bem e pretendeu exercer o direito de retenção até ser indenizado.",
+  "comando": "Sobre a alegação de Carlos, assinale a afirmativa correta.",
+  "gabarito": "A",
+  "alternativas": {
+   "A": "Não deve ser acolhida, pois a existência de benfeitorias e o direito de retenção deveriam ter sido alegados na contestação, na fase de conhecimento.",
+   "B": "Deve ser acolhida, pois o direito de retenção por benfeitorias necessárias pode ser exercido a qualquer tempo.",
+   "C": "Deve ser acolhida, desde que Carlos preste caução.",
+   "D": "Não deve ser acolhida, pois benfeitorias nunca geram direito de retenção."
+  },
+  "feedbacks": {
+   "A": "Correto: art. 538, §§ 1º e 2º.",
+   "B": "Errado: o momento processual é a contestação.",
+   "C": "Errado: não há essa previsão.",
+   "D": "Errado: o possuidor de boa-fé tem direito de retenção por benfeitorias necessárias e úteis (art. 1.219, CC), mas deve exercê-lo no momento certo."
+  },
+  "fundamento": "Art. 538: não cumprida a obrigação de entregar coisa no prazo estabelecido na sentença, será expedido mandado de busca e apreensão ou de imissão na posse em favor do credor, conforme se tratar de coisa móvel ou imóvel. § 1º: a existência de benfeitorias deve ser alegada na fase de conhecimento, em contestação, de forma discriminada e com atribuição, sempre que possível e justificadamente, do respectivo valor. § 2º: o direito de retenção por benfeitorias deve ser exercido na contestação, na fase de conhecimento.",
+  "caqui": "Benfeitoria é assunto do primeiro tempo. Quem guarda essa carta para o segundo tempo perde a vez: no cumprimento, só resta entregar a coisa."
+ }
+];
+let cur = 0;
+const st = {};
+function cl(s){return esc(s.replace(/^(Correto|Errado):\s*/,'').replace(/^./,c=>c.toUpperCase()));}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function init(){
+  const nv=document.getElementById('nv'), qs=document.getElementById('qs');
+  QUESTOES.forEach((q,i)=>{
+    const b=document.createElement('button'); b.textContent=q.num; b.onclick=()=>go(i); nv.appendChild(b);
+    qs.appendChild(bc(q,i));
+  });
+  go(0); us();
+}
+function bc(q,i){
+  const d=document.createElement('div'); d.className='qc'; d.id='q'+i;
+  let h='<div class="qh"><span class="qtag">Questão '+q.num+'</span><span class="qex">'+esc(q.exame)+'</span></div>';
+  h+='<div class="qt">'+esc(q.titulo)+'</div>';
+  h+='<div class="en">'+esc(q.enunciado)+'</div><div class="cm">'+esc(q.comando)+'</div>';
+  ['A','B','C','D'].forEach(l=>{
+    h+='<button class="alt" data-l="'+l+'" onclick="resp('+i+',\''+l+'\')"><span class="lt">'+l+'</span><span>'+esc(q.alternativas[l])+'</span></button>';
+  });
+  h+='<div class="fb" id="fb'+i+'"></div>';
+  h+='<div class="acts" id="ac'+i+'"><button class="b1" onclick="tF('+i+')">Ver fundamento legal</button>';
+  h+='<button class="b2" onclick="tX('+i+')">Explicação do Prof. Caqui</button>';
+  h+='<button class="b3" onclick="rst('+i+')">↺ Tentar novamente</button>';
+  h+='<span class="gab">Gabarito: <b>'+q.gabarito+'</b></span></div>';
+  h+='<div class="fu" id="fu'+i+'"><h4>📖 Fundamento legal</h4>'+esc(q.fundamento)+'</div>';
+  h+='<div class="ca" id="ca'+i+'"><h4>🍊 Explicação didática do Professor Caqui</h4>'+esc(q.caqui)+'</div>';
+  d.innerHTML=h; return d;
+}
+function resp(i,l){
+  if(st[i]) return;
+  const q=QUESTOES[i], ok=l===q.gabarito; st[i]=ok?'ok':'no';
+  document.querySelectorAll('#q'+i+' .alt').forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.l===q.gabarito) b.classList.add('cor');
+    else if(b.dataset.l===l) b.classList.add('err');
+  });
+  const fb=document.getElementById('fb'+i);
+  fb.className='fb '+(ok?'ok':'no');
+  fb.innerHTML=(ok?'<b>✓ Correto!</b> ':'<b>✗ Incorreto.</b> ')+cl(q.feedbacks[l])+(ok?'':' <br><b>Gabarito: '+q.gabarito+'</b> — '+cl(q.feedbacks[q.gabarito]));
+  document.getElementById('ac'+i).classList.add('on');
+  nav(); us();
+}
+function tF(i){document.getElementById('fu'+i).classList.toggle('on');}
+function tX(i){document.getElementById('ca'+i).classList.toggle('on');}
+function rst(i){
+  delete st[i];
+  document.querySelectorAll('#q'+i+' .alt').forEach(b=>{b.disabled=false;b.classList.remove('cor','err');});
+  document.getElementById('fb'+i).className='fb';
+  document.getElementById('ac'+i).classList.remove('on');
+  document.getElementById('fu'+i).classList.remove('on');
+  document.getElementById('ca'+i).classList.remove('on');
+  nav(); us();
+}
+function go(i){
+  if(i<0||i>=QUESTOES.length) return;
+  document.querySelectorAll('.qc').forEach(e=>e.classList.remove('vis'));
+  document.getElementById('q'+i).classList.add('vis');
+  cur=i; nav(); upd();
+}
+function nav(){
+  document.querySelectorAll('#nv button').forEach((b,i)=>{
+    b.className=(i===cur?'act ':'')+(st[i]||'');
+  });
+}
+function upd(){
+  document.getElementById('pi').textContent=(cur+1)+' de '+QUESTOES.length;
+  document.getElementById('bp').disabled=cur===0;
+  document.getElementById('bn').disabled=cur===QUESTOES.length-1;
+}
+function us(){
+  const v=Object.values(st), a=v.filter(x=>x==='ok').length, n=QUESTOES.length;
+  document.getElementById('sR').textContent=v.length;
+  document.getElementById('sA').textContent=a;
+  document.getElementById('sE').textContent=v.length-a;
+  document.getElementById('pb').style.width=(v.length/n*100)+'%';
+  document.getElementById('pt').textContent=v.length+' de '+n+' respondidas';
+}
+init();
+</script>
+</body>
+</html>
